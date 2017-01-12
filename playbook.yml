@@ -1,0 +1,79 @@
+- name: Configure webserver with nginx
+  hosts: testserver
+  become: true
+  tasks:
+    - name: install nginx
+      apt: name=nginx update_cache=yes
+
+    - name: copy nginx config file
+      copy: 
+        src: files/nginx.conf 
+        dest: /etc/nginx/sites-available/default
+
+    - name: enable configuration
+      file: 
+        dest: /etc/nginx/sites-enabled/default
+        src: /etc/nginx/sites-available/default
+        state: link
+
+    - name: copy index.html
+      template: 
+        src: templates/index.html.j2 
+        dest: /usr/share/nginx/html/index.html
+        mode: 0644
+
+    - name: restart nginx
+      service: name=nginx state=restarted
+    
+- name: Create the directory hierarchy
+  hosts: testserver
+  become: true
+  tasks:
+    - file: 
+        path: /opt/musiteca 
+        state: directory 
+        owner: ubuntu 
+        group: ubuntu 
+        mode: 0761
+
+    - file: 
+        path: /opt/musiteca/projects
+        state: directory 
+        owner: ubuntu 
+        group: ubuntu 
+        mode: 0761
+    
+    - file: 
+        path: /opt/musiteca/run
+        state: directory 
+        owner: ubuntu 
+        group: ubuntu 
+        mode: 0761
+    
+    - file: 
+        path: /opt/musiteca/envs
+        state: directory 
+        owner: ubuntu 
+        group: ubuntu 
+        mode: 0761
+    
+    - file: 
+        path: /var/www/projects
+        state: directory 
+        owner: ubuntu 
+        group: ubuntu 
+        mode: 0751
+    
+    - file: 
+        path: /var/www/projects/musiteca 
+        state: directory 
+        owner: ubuntu 
+        group: ubuntu 
+        mode: 0751
+    
+    - file: 
+        path: /var/www/projects/musiteca/static 
+        state: directory 
+        owner: ubuntu 
+        group: ubuntu 
+        mode: 0751
